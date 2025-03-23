@@ -11,11 +11,15 @@ This repository contains database schemas and related code for storing, querying
 - Research interests
 - Publications
 
-## Schema Design
+## Database Options
 
-The database is designed with a relational schema that captures the hierarchical structure of universities, departments, and faculty members, along with many-to-many relationships for research interests and publications.
+This project supports two different database approaches:
 
-### Entity Relationship Diagram
+### Relational Database (SQL)
+
+The SQL schema is designed to capture the hierarchical structure of universities, departments, and faculty members, along with many-to-many relationships for research interests and publications.
+
+#### Entity Relationship Diagram
 
 ```
 Universities 1:N Departments 1:N Faculty N:M Research Interests
@@ -25,7 +29,7 @@ Universities 1:N Departments 1:N Faculty N:M Research Interests
                                 Publications
 ```
 
-### Tables
+#### Tables
 
 - **universities**: Stores information about universities
 - **departments**: Stores department data linked to universities
@@ -35,9 +39,33 @@ Universities 1:N Departments 1:N Faculty N:M Research Interests
 - **publications**: Stores publication information
 - **faculty_publications**: Links faculty to their publications
 
+### Document Database (MongoDB)
+
+The MongoDB schema provides a more flexible approach, allowing for:
+
+- Nested document structures
+- Variable fields across different faculty
+- Unstructured or semi-structured data
+- Original data preservation
+
+#### Collections
+
+- **universities**: Stores university information with nested departments
+- **faculty**: Stores faculty profiles with embedded publications and research interests
+
+## Data Synchronization
+
+The project includes utilities for mapping data between SQL and MongoDB schemas, allowing for:
+
+- Bidirectional synchronization
+- Polyglot persistence
+- Consistent data across storage systems
+
 ## Usage
 
-To initialize the database with the schema:
+### SQL Implementation
+
+To initialize the database with the SQL schema:
 
 ```bash
 # PostgreSQL
@@ -47,9 +75,33 @@ psql -U username -d faculty_db -f schema.sql
 mysql -u username -p faculty_db < schema.sql
 ```
 
+### MongoDB Implementation
+
+To initialize MongoDB with the document schema:
+
+```bash
+# Execute the schema creation script
+mongo < mongodb_schema.js
+```
+
+### Data Mapping
+
+To convert between SQL and MongoDB data formats:
+
+```javascript
+// Example Node.js usage
+const { sqlToMongo, mongoToSql } = require('./data_mapper');
+
+// Convert SQL query result to MongoDB document
+const mongoDoc = sqlToMongo(sqlQueryResult);
+
+// Convert MongoDB document to SQL tables data
+const sqlData = mongoToSql(mongoDocument);
+```
+
 ## Future Enhancements
 
-- Add indexes for improved query performance
-- Support for NoSQL databases for more flexible schema
-- Data migration scripts
-- API for accessing the faculty data
+- Add GraphQL API layer for unified access
+- Implement full-text search capabilities
+- Add data validation and cleaning utilities
+- Develop migration scripts and versioning system
